@@ -3,7 +3,7 @@ Docstring for app.routes.auth
 All the Authectication is handle by this file. 
 '''
 
-from flask import Blueprint,render_template,request,redirect,url_for,flash,jsonify,make_response
+from flask import Blueprint,render_template,request,redirect,url_for,flash,jsonify,make_response,session
 from app.models.user import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.extenstions import db
@@ -17,32 +17,32 @@ import jwt
 
 auth_bp=Blueprint("auth",__name__,url_prefix="/auth")
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = request.cookies.get('jwt_token')
+# def token_required(f):
+#     @wraps(f)
+#     def decorated(*args, **kwargs):
+#         token = request.cookies.get('jwt_token')
 
-        if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
+#         if not token:
+#             return jsonify({'message': 'Token is missing!'}), 401
 
-        try:
-            data = jwt.decode(token, Config.SECRET_KEY, algorithms=["HS256"])
-            current_user = User.query.filter_by(public_id=data['public_id']).first()
-        except:
-            return jsonify({'message': 'Token is invalid!'}), 401
+#         try:
+#             data = jwt.decode(token, Config.SECRET_KEY, algorithms=["HS256"])
+#             current_user = User.query.filter_by(public_id=data['public_id']).first()
+#         except:
+#             return jsonify({'message': 'Token is invalid!'}), 401
 
-        return f(current_user, *args, **kwargs)
+#         return f(current_user, *args, **kwargs)
 
-    return decorated
+#     return decorated
 
 @auth_bp.route("/register",methods=["POST","GET"])
 def register():
     if request.method == "POST":
-        # if User.query.filter_by(email=request.form['email']).first():
-        #     flash("User Alrady Exists")
-        #     return redirect(url_for("auth.register"))
-        if User.query.filter_by(email=request.form["email"]).first():
-            return {"error": "User already exists"}, 409
+        error=None
+        if User.query.filter_by(email=request.form['email']).first():
+            error="User Alrady exists"
+            return render_template("register.html",error=error)
+      
 
         user=User(
             public_id=str(uuid.uuid4()),
@@ -53,25 +53,34 @@ def register():
         db.session.add(user)
         db.session.commit()
 
-        flash("Register Succesfully")
-        return redirect(url_for("auth.login"))        
+        error="Register Succesfull pleas login"
+        return render_template("login.html",error=error)      
     
     return render_template("register.html")     
 
 @auth_bp.route("/login",methods=["POST","GET"])
 def login():
+    error=None
     if request.method=="POST":
         email=request.form["email"]
         password=request.form["password"]
+        
         user=User.query.filter_by(email=email).first()
 
-        if not user or not check_password_hash(user.password,password):
-            return jsonify({'message:invalid email or password'}),401
+        if not user or not check_password_hash(user.password_hash,password):
+            error="Invalid crediantial"
+            #return redirect(url_for("auth.login"),)
+        else:
+            error="Sucess login"
+            return render_template("dashboard.html",error=error)
         
-        token = jwt.encode({'public_id': user.public_id, 'exp': datetime.now(timezone.utc) + timedelta(hours=1)},Config.SECRET_KEY, algorithm="HS256")
+        
+        
+        
+        # token = jwt.encode({'public_id': user.public_id, 'exp': datetime.now(timezone.utc) + timedelta(hours=1)},Config.SECRET_KEY, algorithm="HS256")
 
-        reponse=make_response(redirect(url_for('dashboard')))
-        reponse.set_cookie('jwt_token',token)
+        # reponse=make_response(redirect(url_for('home')))
+        # reponse.set_cookie('jwt_token',token)
 
-        return reponse
-    return render_template("login.html")
+        # return reponse
+    return render_template("login.html",error=error)

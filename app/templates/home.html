@@ -6,8 +6,9 @@
 </head>
 <body>
     <h1>Welcome To blog page</h1>
+    <a href="{{ url_for('home.twitter') }}">Twitter</a>
     <a href="{{ url_for('auth.login') }}">Login</a>
     <a href="{{ url_for('auth.register') }}">Register</a>
-    {% block content %}{% endblock %}
+    {% block centermain %}{% endblock %}
 </body>
 </html>

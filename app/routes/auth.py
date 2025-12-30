@@ -17,70 +17,71 @@ import jwt
 
 auth_bp=Blueprint("auth",__name__,url_prefix="/auth")
 
-# def token_required(f):
-#     @wraps(f)
-#     def decorated(*args, **kwargs):
-#         token = request.cookies.get('jwt_token')
 
-#         if not token:
-#             return jsonify({'message': 'Token is missing!'}), 401
+def get_current_user():
+    if 'user_id' in session:
+        return User.query.get(session['user_id'])
+    return None 
 
-#         try:
-#             data = jwt.decode(token, Config.SECRET_KEY, algorithms=["HS256"])
-#             current_user = User.query.filter_by(public_id=data['public_id']).first()
-#         except:
-#             return jsonify({'message': 'Token is invalid!'}), 401
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if 'user_id' not in session:
+            flash("Please login first")
+            return redirect(url_for('auth.login'))
+        return f(*args, **kwargs)
+    return wrapper
 
-#         return f(current_user, *args, **kwargs)
+@auth_bp.after_request
+def add_header(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
+    return response
 
-#     return decorated
 
-@auth_bp.route("/register",methods=["POST","GET"])
+@auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        error=None
-        if User.query.filter_by(email=request.form['email']).first():
-            error="User Alrady exists"
-            return render_template("register.html",error=error)
-      
+        email = request.form['email']
 
-        user=User(
+        if User.query.filter_by(email=email).first():
+            flash("User already exists")
+            return redirect(url_for("auth.register"))
+
+        user = User(
             public_id=str(uuid.uuid4()),
-            username=request.form["username"],  
-            email=request.form["email"],
+            username=request.form["username"],
+            email=email,
             password_hash=generate_password_hash(request.form["password"])
-        ) 
+        )
+
         db.session.add(user)
         db.session.commit()
 
-        error="Register Succesfull pleas login"
-        return render_template("login.html",error=error)      
-    
-    return render_template("register.html")     
+        flash("Registration successful. Please login.")
+        return redirect(url_for("auth.login"))
 
-@auth_bp.route("/login",methods=["POST","GET"])
+    return render_template("register.html")   
+
+
+
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    error=None
-    if request.method=="POST":
-        email=request.form["email"]
-        password=request.form["password"]
-        
-        user=User.query.filter_by(email=email).first()
+    if request.method == "POST":
+        user = User.query.filter_by(email=request.form["email"]).first()
 
-        if not user or not check_password_hash(user.password_hash,password):
-            error="Invalid crediantial"
-            #return redirect(url_for("auth.login"),)
-        else:
-            error="Sucess login"
-            return render_template("dashboard.html",error=error)
-        
-        
-        
-        
-        # token = jwt.encode({'public_id': user.public_id, 'exp': datetime.now(timezone.utc) + timedelta(hours=1)},Config.SECRET_KEY, algorithm="HS256")
+        if not user or not check_password_hash(user.password_hash, request.form["password"]):
+            flash("Invalid credentials")
+            return redirect(url_for("auth.login"))
 
-        # reponse=make_response(redirect(url_for('home')))
-        # reponse.set_cookie('jwt_token',token)
+        session['user_id'] = user.id
+        flash("Login successful")
+        return redirect(url_for("home.dashboard"))
 
-        # return reponse
-    return render_template("login.html",error=error)
+    return render_template("login.html")
+
+
+@auth_bp.route("/logout")
+def logout():
+    session.clear()
+    flash("Logged out successfully")
+    return redirect(url_for("home.home"))

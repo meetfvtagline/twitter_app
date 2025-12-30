@@ -1,0 +1,12 @@
+{% extends "home.html" %}
+
+{% block centermain%}
+
+<form action=" {{ url_for('home.create_blog') }} " method="POST" enctype="multipart/form-data">
+    <input type="text" name="title" id="" placeholder="Enter tile">
+    <input type="text" name="discription" id="" placeholder="Enter discription">
+    <input type="file" name="image" id="" >
+    <button type="submit">Create blog</button>
+</form>
+
+{% endblock %}

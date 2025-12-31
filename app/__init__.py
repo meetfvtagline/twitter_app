@@ -4,7 +4,7 @@ from .config import Config
 from flask_migrate import Migrate
 from .routes.auth import auth_bp
 from .routes.home import home_bp
-from .extenstions import db
+from .extenstions import db,csrf
 from app.models.user import User,Blog
 
 migrate=Migrate()
@@ -20,13 +20,11 @@ def create_app():
         response.headers["Expires"] = "0"
         return response
 
+    csrf.init_app(app)
     db.init_app(app)
     migrate.init_app(app,db)
     
     app.register_blueprint(home_bp)
     app.register_blueprint(auth_bp)
-
-    with app.app_context():
-        db.create_all()
 
     return app

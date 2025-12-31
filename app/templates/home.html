@@ -1,4 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blog</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
 <body>
+
 <h1>Welcome To Blog Page</h1>
 
 {% if session.get('user_id') %}
@@ -9,16 +16,15 @@
     <a href="{{ url_for('auth.register') }}">Register</a>
 {% endif %}
 
-
 {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for msg in messages %}
-      <p>{{ msg }}</p>
-    {% endfor %}
-  {% endif %}
+  {% for msg in messages %}
+    <p>{{ msg }}</p>
+  {% endfor %}
 {% endwith %}
 
-
+<hr>
 
 {% block centermain %}{% endblock %}
+
 </body>
+</html>

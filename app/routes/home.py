@@ -1,7 +1,7 @@
-from flask import Blueprint, render_template,request,url_for,redirect,current_app
+from flask import Blueprint, render_template,request,url_for,redirect,current_app,abort,flash,jsonify
 from app.routes.auth import get_current_user, login_required
 from werkzeug.utils import secure_filename
-from app.models.user import Blog
+from app.models.user import Blog,Like
 from app.extenstions import db
 import os
 import uuid
@@ -11,7 +11,6 @@ home_bp = Blueprint("home", __name__)
 
 @home_bp.route("/")
 def home():
-    user=get_current_user()
     return render_template("home.html")
 
 
@@ -20,13 +19,22 @@ def home():
 def dashboard():
     user = get_current_user()
     blogs= Blog.query.order_by(Blog.id.desc()).all()
-    return render_template("dashboard.html", user=user,blogs=blogs)
+
+    liked_blog_ids = [
+        like.blog_id
+        for like in Like.query.filter_by(user_id=user.id).all()
+    ]
+
+    return render_template(
+        "dashboard.html", user=user,blogs=blogs,liked_blog_ids=liked_blog_ids
+    )
 
 @home_bp.route("/create_blog",methods=['POST','GET'])
 @login_required
 def create_blog():
     user=get_current_user()
     MAX_WORDS=150
+    
     if request.method=="POST":
         title=request.form['title']
         description=request.form['description']
@@ -35,8 +43,12 @@ def create_blog():
         image_path=None
 
         word_count = len(description.split())
+        # if word_count > MAX_WORDS:
+        #     raise ValueError(f"Description cannot exceed {MAX_WORDS} words. Currently {word_count} words.")
+        
         if word_count > MAX_WORDS:
-            raise ValueError(f"Description cannot exceed {MAX_WORDS} words. Currently {word_count} words.")
+            flash("Description cannot exceed 150 words")
+            return redirect(request.url)
     
         if image and image.filename:
             filename = secure_filename(image.filename)
@@ -58,7 +70,7 @@ def create_blog():
             title=title,
             description=description,
             image_path=image_path,
-            user_id=user.id
+            user_id=user.id,
         )
 
         db.session.add(blog)
@@ -67,31 +79,48 @@ def create_blog():
         return redirect(url_for("home.dashboard"))
 
     return render_template("create_blog.html")
+from flask import abort
 
-@home_bp.route("/delete_blog",methods=['POST'])
+@home_bp.route("/delete_blog", methods=["POST"])
 @login_required
 def delete_blog():
-    if request.method=='POST':
-        blog_id=request.form['delete']
-        blog=Blog.query.get_or_404(blog_id)
-        db.session.delete(blog)
-        db.session.commit()
-        return redirect(url_for('home.dashboard'))        
+    user = get_current_user()
+
+    blog_id = request.form.get("delete")
+    blog = Blog.query.get_or_404(blog_id)
+
+    if blog.user_id != user.id:
+        abort(403)
+
+    db.session.delete(blog)
+    db.session.commit()
+
+    return redirect(url_for("home.dashboard"))
+     
 
 
 
 @home_bp.route("/update_blog/<int:blog_id>",methods=['POST','GET'])
 @login_required
 def update_blog(blog_id):
+    
     MAX_WORDS=150
     blog=Blog.query.get_or_404(blog_id)
+
+    user = get_current_user()
+    if blog.user_id != user.id:
+        abort(403)
+    
     if request.method=="POST":
         blog.title = request.form['title']
         description = request.form['description']
 
         word_count = len(description.split())
+        # if word_count > MAX_WORDS:
+        #     raise ValueError("Description cannot exceed 150 words")
         if word_count > MAX_WORDS:
-            raise ValueError("Description cannot exceed 150 words")
+            flash("Description cannot exceed 150 words")
+            return redirect(request.url)
         
         blog.description = description
 
@@ -114,3 +143,28 @@ def update_blog(blog_id):
 
 
     return render_template("update_blog.html",blog=blog)
+
+@home_bp.route("/like/<int:blog_id>", methods=["POST"])
+@login_required
+def like_blog(blog_id):
+    user = get_current_user()
+    blog = Blog.query.get_or_404(blog_id)
+
+    like = Like.query.filter_by(
+        user_id=user.id,
+        blog_id=blog.id
+    ).first()
+
+    if like:
+        db.session.delete(like)
+        liked = False
+    else:
+        db.session.add(Like(user_id=user.id, blog_id=blog.id))
+        liked = True
+
+    db.session.commit()
+
+    return jsonify({
+        "liked": liked,
+        "likes_count": len(blog.likes)
+    })

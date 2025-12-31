@@ -85,3 +85,4 @@ def logout():
     session.clear()
     flash("Logged out successfully")
     return redirect(url_for("home.home"))
+

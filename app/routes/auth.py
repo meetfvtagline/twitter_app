@@ -86,3 +86,17 @@ def logout():
     flash("Logged out successfully")
     return redirect(url_for("home.home"))
 
+@auth_bp.route("/profile")
+def profile():
+    user=get_current_user()
+    user_name=user.username
+    user_email=user.email
+    return render_template("profile.html",username=user_name,user_email=user_email)
+
+@auth_bp.route("/change_pass")
+def change_pass():
+    return render_template("password_change.html")
+
+@auth_bp.route("/forget_pass")
+def forget_pass():
+    return render_template("forget_pass.html")

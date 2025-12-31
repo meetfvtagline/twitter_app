@@ -4,9 +4,48 @@
 
 <form action=" {{ url_for('home.create_blog') }} " method="POST" enctype="multipart/form-data">
     <input type="text" name="title" id="" placeholder="Enter tile">
-    <input type="text" name="discription" id="" placeholder="Enter discription">
+    <label for="description">Blog Description (max 150 words)</label><br>
+    <textarea id="description" name="description" rows="6" cols="60"></textarea><br>
+    <small>
+        Words: <span id="wordCount">0</span> / 150 |
+        Remaining: <span id="wordsLeft">150</span>
+    </small><br><br>
+
     <input type="file" name="image" id="" >
     <button type="submit">Create blog</button>
 </form>
 
+<script>
+const textarea = document.getElementById("description");
+const wordCountSpan = document.getElementById("wordCount");
+const wordsLeftSpan = document.getElementById("wordsLeft");
+const submitBtn = document.getElementById("submitBtn");
+
+const MAX_WORDS = 150;
+
+function getWordCount(text) {
+    return text.trim().length === 0
+        ? 0
+        : text.trim().split(/\s+/).length;
+}
+
+textarea.addEventListener("input", () => {
+    const wordCount = getWordCount(textarea.value);
+    const remaining = MAX_WORDS - wordCount;
+
+    wordCountSpan.textContent = wordCount;
+    wordsLeftSpan.textContent = remaining;
+
+    if (wordCount > MAX_WORDS) {
+        submitBtn.disabled = true;
+        submitBtn.style.cursor = "not-allowed";
+    } else {
+        submitBtn.disabled = false;
+        submitBtn.style.cursor = "pointer";
+    }
+});
+</script>
+
+
 {% endblock %}
+

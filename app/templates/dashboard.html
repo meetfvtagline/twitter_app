@@ -12,11 +12,23 @@
 {% if blogs %}
 {%for blog in blogs%}
 <h2>Blog by: {{blog.user.username}}</h2>
-<h2>{{blog.title}}</h2>
-<h4>{{blog.discription}}</h4>
 {% if blog.image_path %}
 <img src="{{ url_for('static', filename=blog.image_path) }}" width="250">
 {% endif %}
+<h2>{{blog.title}}</h2>
+<h4>{{blog.description}}</h4>
+
+{% if blog.user_id == user.id%}
+<form method="POST" action="{{ url_for('home.delete_blog') }}" onsubmit="return confirm('Are you sure you want to delete this blog?');">
+    <button type="submit" name="delete" value="{{ blog.id }}">
+        Delete Blog
+    </button>
+</form>
+<a href="{{ url_for('home.update_blog', blog_id=blog.id) }}">
+    Edit Blog
+</a>
+
+{%endif %}
 {%endfor%}
 {%endif%}
 

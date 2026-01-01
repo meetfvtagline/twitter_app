@@ -1,10 +1,105 @@
 {% extends "home.html" %}
+
 {% block centermain %}
 
-<form action="{{url_for('auth.forgot_password')}}" method="post">
-<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-<input type="email" name="email" id="" placeholder="Enter Your Existing email">
-<button type="submit">Reset password link</button>
-</form>
+<style>
+    .reset-card {
+        background-color: #16181c;
+        border: 1px solid #2f3336;
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 420px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-{%endblock%}
+    .reset-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .reset-subtitle {
+        font-size: 14px;
+        color: #71767b;
+        margin: 0;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    label {
+        font-size: 14px;
+        color: #e7e9ea;
+    }
+
+    input[type="email"] {
+        background-color: #000000;
+        border: 1px solid #2f3336;
+        border-radius: 8px;
+        padding: 12px;
+        color: #e7e9ea;
+        font-size: 14px;
+    }
+
+    input[type="email"]::placeholder {
+        color: #71767b;
+    }
+
+    input[type="email"]:focus {
+        outline: none;
+        border-color: #1d9bf0;
+        box-shadow: 0 0 0 1px #1d9bf0;
+    }
+
+    .reset-btn {
+        margin-top: 8px;
+        padding: 12px;
+        border-radius: 999px;
+        border: none;
+        background-color: #1d9bf0;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .reset-btn:hover,
+    .reset-btn:focus {
+        background-color: #1a8cd8;
+    }
+</style>
+
+<section class="reset-card" aria-label="Password reset">
+    <h2 class="reset-title">Forgot your password?</h2>
+    <p class="reset-subtitle">
+        Enter the email address associated with your account and we’ll send you a reset link.
+    </p>
+
+    <form action="{{ url_for('auth.forgot_password') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="you@example.com"
+                required
+            >
+        </div>
+
+        <button type="submit" class="reset-btn">
+            Send Reset Link
+        </button>
+    </form>
+</section>
+
+{% endblock %}

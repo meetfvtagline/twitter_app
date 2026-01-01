@@ -1,31 +1,138 @@
 {% extends "home.html" %}
 {% block centermain %}
 
-<h2>Create Blog</h2>
+<style>
+    .editor-card {
+        background-color: #16181c;
+        border: 1px solid #2f3336;
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 700px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-<form action="{{ url_for('home.create_blog') }}"
-      method="POST"
-      enctype="multipart/form-data">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    .editor-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+    }
 
-    <input type="text" name="title" placeholder="Blog title" required>
-    <br><br>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
 
-    <label>Blog Description (max 150 words)</label><br>
-    <textarea id="description" name="description" rows="6" cols="60" required></textarea>
-    <br>
+    label {
+        font-size: 14px;
+        color: #e7e9ea;
+    }
 
-    <small>
-        Words: <span id="wordCount">0</span> / 150 |
-        Remaining: <span id="wordsLeft">150</span>
-    </small>
-    <br><br>
+    input[type="text"],
+    textarea {
+        background-color: #000000;
+        border: 1px solid #2f3336;
+        border-radius: 8px;
+        padding: 12px;
+        color: #e7e9ea;
+        font-size: 14px;
+        resize: vertical;
+    }
 
-    <input type="file" name="image" accept="image/*">
-    <br><br>
+    textarea {
+        min-height: 140px;
+    }
 
-    <button type="submit" id="submitBtn">Create Blog</button>
-</form>
+    input:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #1d9bf0;
+        box-shadow: 0 0 0 1px #1d9bf0;
+    }
+
+    .word-counter {
+        font-size: 13px;
+        color: #71767b;
+        display: flex;
+        gap: 8px;
+    }
+
+    input[type="file"] {
+        font-size: 14px;
+        color: #e7e9ea;
+    }
+
+    .submit-btn {
+        align-self: flex-start;
+        padding: 12px 22px;
+        border-radius: 999px;
+        border: none;
+        background-color: #1d9bf0;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, opacity 0.2s ease;
+    }
+
+    .submit-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .submit-btn:hover:not(:disabled),
+    .submit-btn:focus:not(:disabled) {
+        background-color: #1a8cd8;
+    }
+</style>
+
+<section class="editor-card" aria-label="Create blog">
+    <h2 class="editor-title">Create Blog</h2>
+
+    <form action="{{ url_for('home.create_blog') }}"
+          method="POST"
+          enctype="multipart/form-data">
+
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+            <label for="title">Blog title</label>
+            <input
+                type="text"
+                name="title"
+                id="title"
+                placeholder="Write a compelling title"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="description">Blog description (max 150 words)</label>
+            <textarea
+                id="description"
+                name="description"
+                required
+            ></textarea>
+        </div>
+
+        <div class="word-counter">
+            <span>Words: <strong id="wordCount">0</strong> / 150</span>
+            <span>| Remaining: <strong id="wordsLeft">150</strong></span>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Add image</label>
+            <input type="file" name="image" id="image" accept="image/*">
+        </div>
+
+        <button type="submit" id="submitBtn" class="submit-btn">
+            Create Blog
+        </button>
+    </form>
+</section>
 
 <script>
 const textarea = document.getElementById("description");
@@ -39,13 +146,15 @@ function getWordCount(text) {
     return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
 }
 
-textarea.addEventListener("input", () => {
+function updateCounter() {
     const count = getWordCount(textarea.value);
     wordCountSpan.textContent = count;
     wordsLeftSpan.textContent = MAX_WORDS - count;
-
     submitBtn.disabled = count > MAX_WORDS;
-});
+}
+
+textarea.addEventListener("input", updateCounter);
+updateCounter();
 </script>
 
 {% endblock %}

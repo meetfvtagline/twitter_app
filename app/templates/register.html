@@ -1,21 +1,120 @@
 {% extends "home.html" %}
+
 {% block centermain %}
 
-<h2>Register</h2>
+<style>
+    .register-card {
+        background-color: #16181c;
+        border: 1px solid #2f3336;
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 420px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-<form action="{{ url_for('auth.register') }}" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    .register-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+    }
 
-    <input type="text" name="username" placeholder="Enter username" required>
-    <br><br>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
 
-    <input type="email" name="email" placeholder="Enter email" required>
-    <br><br>
+    label {
+        font-size: 14px;
+        color: #e7e9ea;
+    }
 
-    <input type="password" name="password" placeholder="Enter password" required>
-    <br><br>
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        background-color: #000000;
+        border: 1px solid #2f3336;
+        border-radius: 8px;
+        padding: 12px;
+        color: #e7e9ea;
+        font-size: 14px;
+    }
 
-    <button type="submit">Register</button>
-</form>
+    input::placeholder {
+        color: #71767b;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #1d9bf0;
+        box-shadow: 0 0 0 1px #1d9bf0;
+    }
+
+    .register-btn {
+        margin-top: 8px;
+        padding: 12px;
+        border-radius: 999px;
+        border: none;
+        background-color: #1d9bf0;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .register-btn:hover,
+    .register-btn:focus {
+        background-color: #1a8cd8;
+    }
+</style>
+
+<section class="register-card" aria-label="Register">
+    <h2 class="register-title">Create your account</h2>
+
+    <form action="{{ url_for('auth.register') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input
+                type="text"
+                name="username"
+                id="username"
+                placeholder="Choose a username"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="you@example.com"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Create a password"
+                required
+            >
+        </div>
+
+        <button type="submit" class="register-btn">
+            Register
+        </button>
+    </form>
+</section>
 
 {% endblock %}

@@ -1,20 +1,122 @@
 {% extends "home.html" %}
+
 {% block centermain %}
 
-<h2>Login</h2>
+<style>
+    .login-card {
+        background-color: #16181c;
+        border: 1px solid #2f3336;
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 420px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
 
-<form action="{{ url_for('auth.login') }}" method="POST">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    .login-title {
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+    }
 
-    <input type="email" name="email" placeholder="Enter your email" required>
-    <br><br>
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
 
-    <input type="password" name="password" placeholder="Enter your password" required>
-    <br><br>
+    label {
+        font-size: 14px;
+        color: #e7e9ea;
+    }
 
-    <button type="submit">Login</button>
+    input[type="email"],
+    input[type="password"] {
+        background-color: #000000;
+        border: 1px solid #2f3336;
+        border-radius: 8px;
+        padding: 12px;
+        color: #e7e9ea;
+        font-size: 14px;
+    }
 
-    <a href=" {{url_for('auth.forgot_password') }}">Forgot password</a>
-</form>
+    input::placeholder {
+        color: #71767b;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #1d9bf0;
+        box-shadow: 0 0 0 1px #1d9bf0;
+    }
+
+    .login-btn {
+        margin-top: 8px;
+        padding: 12px;
+        border-radius: 999px;
+        border: none;
+        background-color: #1d9bf0;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .login-btn:hover,
+    .login-btn:focus {
+        background-color: #1a8cd8;
+    }
+
+    .forgot-link {
+        font-size: 14px;
+        color: #1d9bf0;
+        text-align: center;
+    }
+
+    .forgot-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<section class="login-card" aria-label="Login">
+    <h2 class="login-title">Log in to your account</h2>
+
+    <form action="{{ url_for('auth.login') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="you@example.com"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Enter your password"
+                required
+            >
+        </div>
+
+        <button type="submit" class="login-btn">
+            Log In
+        </button>
+
+        <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">
+            Forgot your password?
+        </a>
+    </form>
+</section>
 
 {% endblock %}

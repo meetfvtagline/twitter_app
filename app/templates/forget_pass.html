@@ -1,6 +1,10 @@
 {% extends "home.html" %}
 {% block centermain %}
 
-
+<form action="{{url_for('auth.forgot_password')}}" method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<input type="email" name="email" id="" placeholder="Enter Your Existing email">
+<button type="submit">Reset password link</button>
+</form>
 
 {%endblock%}

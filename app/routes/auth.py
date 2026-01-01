@@ -4,9 +4,11 @@ All the Authectication is handle by this file.
 '''
 
 from flask import Blueprint,render_template,request,redirect,url_for,flash,jsonify,make_response,session
+from flask_mail import Message,Mail
+from app.routes.utils import generate_reset_token,verify_reset_token
 from app.models.user import User
 from werkzeug.security import generate_password_hash, check_password_hash
-from app.extenstions import db
+from app.extenstions import db,mail
 from app.config import Config
 from datetime import datetime, timezone, timedelta
 from functools import wraps
@@ -87,16 +89,83 @@ def logout():
     return redirect(url_for("home.home"))
 
 @auth_bp.route("/profile")
+@login_required
 def profile():
     user=get_current_user()
     user_name=user.username
     user_email=user.email
     return render_template("profile.html",username=user_name,user_email=user_email)
 
-@auth_bp.route("/change_pass")
+@auth_bp.route("/change_pass",methods=['POST','GET'])
+@login_required
 def change_pass():
+    user=get_current_user()
+    if request.method=="POST":
+        old_pass=request.form['oldpass']
+        new_pass=request.form['newpass']
+
+        if check_password_hash(user.password_hash,old_pass):
+            user.password_hash=generate_password_hash(new_pass)
+            flash("Password changed succesfully")
+            db.session.commit()
+            return redirect(url_for("auth.profile"))
+        else:
+            flash("Invalid Old pass..")
+            redirect(url_for("auth.change_pass"))
+
+        
     return render_template("password_change.html")
 
-@auth_bp.route("/forget_pass")
-def forget_pass():
+
+
+
+@auth_bp.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            token = generate_reset_token(user.email)
+            reset_url = url_for(
+                "auth.reset_password",
+                token=token,
+                _external=True
+            )
+
+            msg = Message(
+                subject="Password Reset Request from Twitter App",
+                recipients=[user.email],
+                body=f"""
+Hello {user.username},
+Click the link below to reset your password:
+{reset_url}
+This link expires in 30 minutes.
+"""
+            )
+            mail.send(msg)
+
+        flash("If that email exists, a reset link has been sent.")
+        return redirect(url_for("auth.login"))
+
     return render_template("forget_pass.html")
+
+@auth_bp.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    email = verify_reset_token(token)
+
+    if not email:
+        flash("Invalid or expired token.")
+        return redirect(url_for("auth.login"))
+
+    user = User.query.filter_by(email=email).first_or_404()
+
+    if request.method == "POST":
+        password = request.form['password']
+        user.password_hash = generate_password_hash(password)
+        db.session.commit()
+
+        flash("Password reset successful. Please login.")
+        return redirect(url_for("auth.login"))
+
+    return render_template("reset_password.html")

@@ -1,76 +1,44 @@
 🐦 Flask Twitter-Like Microblogging App
 
-A Twitter-inspired microblogging application built with Flask.
-Focused on authentication, posting short blogs, likes, image uploads, and profiles, with PostgreSQL and email-based password recovery.
+A Twitter-inspired microblogging application built using Flask and PostgreSQL.
+This project focuses on core backend functionality rather than UI design.
 
-📸 What This Project Does
+✨ Overview
 
-✔ Allows users to register & login securely
-✔ Users can post short blogs (15-word limit)
-✔ Blogs support image uploads
-✔ Users can like posts (count updates on refresh)
-✔ Blogs are shown in LIFO order (latest first)
-✔ Users can create & edit profiles
-✔ Forgot / Reset Password via email
-✔ Uses PostgreSQL + Flask-Migrate
-✔ Proper error handling at every level
+This application allows users to create short microblogs, upload images, like posts, and manage profiles with secure authentication and email-based password recovery.
 
-🎯 Design is minimal — functionality is the priority
+🎯 Goal: Demonstrate Flask fundamentals, authentication, database design, and clean project structure.
 
-🧱 Project Structure
-TWITTER_APP/
-│
-├── app/
-│   ├── models/          # Database models
-│   ├── routes/          # Application routes (auth, blog, profile)
-│   ├── static/          # CSS, uploaded images
-│   ├── templates/       # Jinja2 templates
-│   ├── __init__.py
-│   ├── config.py        # App configuration
-│   └── extensions.py   # DB, LoginManager, Mail
-│
-├── migrations/          # Database migrations
-│
-├── .env                 # Environment variables (NOT pushed to Git)
-├── .gitignore
-├── requirements.txt
-├── pyproject.toml
-├── run.py               # App entry point
-├── uv.lock
-└── README.md
-
-🚀 Features Overview
+🔥 Key Features
 🔐 Authentication
 
-Register
+User Registration
 
-Login
-
-Logout
+Login & Logout
 
 Forgot Password
 
-Reset Password (Email-based)
+Reset Password via Email (Token-based)
 
 ✍️ Microblogging
 
-Maximum 15 words per blog
+Create blogs with maximum 15 words
 
-Image upload support
+Upload images with posts
 
-Latest posts shown first (LIFO)
+Blogs displayed in LIFO order (latest first)
 
 ❤️ Likes
 
-Like counter visible to all users
+Like posts from other users
 
-Count updates on page refresh
+Like counter updates on page refresh
 
-👤 User Profile
+👤 User Profiles
 
-Create profile
+Profile creation
 
-Edit profile (logged-in users)
+Edit profile (logged-in users only)
 
 🛡️ Security & Validation
 
@@ -80,10 +48,32 @@ CSRF protection
 
 Secure email tokens
 
-Proper error messages
+Proper validation & error messages
+
+🧱 Project Structure
+TWITTER_APP/
+│
+├── app/
+│   ├── models/          # Database models
+│   ├── routes/          # Auth, blog, profile routes
+│   ├── static/          # CSS & uploaded images
+│   ├── templates/       # Jinja2 templates
+│   ├── __init__.py
+│   ├── config.py        # Application configuration
+│   └── extensions.py   # SQLAlchemy, LoginManager, Mail
+│
+├── migrations/          # Flask-Migrate files
+│
+├── .env                 # Environment variables (not tracked)
+├── .gitignore
+├── requirements.txt
+├── pyproject.toml
+├── run.py               # Application entry point
+├── uv.lock
+└── README.md
 
 🛠️ Tech Stack
-Category	Technology
+Layer	Technology
 Backend	Flask
 Database	PostgreSQL
 ORM	SQLAlchemy
@@ -127,23 +117,23 @@ MAIL_PASSWORD=your_google_app_password
 Download from:
 👉 https://www.postgresql.org/download/
 
-Take note of:
+Default credentials used in this project:
 
-Username (default: postgres)
+Username: postgres
 
-Password (example used: root)
+Password: root
 
 2️⃣ Create Database
 CREATE DATABASE twitter_db;
 
 3️⃣ Run Database Migrations
-flask db init       # only first time
+flask db init       # run once
 flask db migrate -m "Initial migration"
 flask db upgrade
 
-📧 Email Setup (Forgot / Reset Password)
+📧 Email Configuration (Password Reset)
 
-This app uses Gmail SMTP with Google App Passwords.
+This project uses Gmail SMTP with Google App Passwords.
 
 🔹 MAIL_USERNAME
 
@@ -182,7 +172,7 @@ MAIL_PASSWORD=abcdefghijklmnop
 
 ▶️ Running the Application
 
-Ensure:
+Make sure:
 
 Virtual environment is active
 
@@ -190,24 +180,24 @@ PostgreSQL is running
 
 .env file exists
 
-Run:
+Run the app:
 
 python run.py
 
 
-Open browser:
+Open in browser:
 
 http://127.0.0.1:5000
 
-👤 How Users Use the App
+👤 User Flow
 
-Open the app URL
+Open application URL
 
 Register a new account
 
 Login
 
-Create blogs (15-word limit)
+Create short blogs (15-word limit)
 
 Upload images
 
@@ -223,15 +213,15 @@ Handled scenarios include:
 
 Invalid login credentials
 
-Duplicate registration
+Duplicate email registration
 
-Blog exceeding word limit
+Blog text exceeding word limit
 
 Unauthorized access
 
-Invalid reset token
+Invalid reset tokens
 
-Invalid file uploads
+Invalid image uploads
 
 🔒 Security Notes
 
@@ -239,17 +229,17 @@ Invalid file uploads
 
 Passwords are hashed
 
-Secure email tokens
-
 CSRF protection enabled
+
+Secure email-based password reset
 
 📌 Future Enhancements
 
 Follow / Unfollow users
 
-AJAX likes
+AJAX-based likes
 
-Comments
+Comments system
 
 Pagination
 
@@ -259,15 +249,3 @@ Deployment (Docker / AWS / Render)
 
 Meet FV Tagline
 GitHub: https://github.com/meetfvtagline
-
-If you want, I can also:
-
-Add screenshots section
-
-Add API documentation
-
-Optimize README for interview submission
-
-Make a deployment README
-
-Just say the word 🚀

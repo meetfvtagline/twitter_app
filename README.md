@@ -237,7 +237,6 @@ Secure email-based password reset
 
 Follow / Unfollow users
 
-AJAX-based likes
 
 Comments system
 

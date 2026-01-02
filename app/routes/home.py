@@ -79,7 +79,7 @@ def create_blog():
         return redirect(url_for("home.dashboard"))
 
     return render_template("create_blog.html")
-from flask import abort
+
 
 @home_bp.route("/delete_blog", methods=["POST"])
 @login_required

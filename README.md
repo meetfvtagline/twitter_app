@@ -1,12 +1,46 @@
-🐦 Flask Twitter-like Microblogging App
+🐦 Flask Twitter-Like Microblogging App
 
-A microblogging web application built using Flask that mimics core Twitter features such as authentication, posting short blogs, liking posts, image uploads, and user profiles.
+A Twitter-inspired microblogging application built with Flask.
+Focused on authentication, posting short blogs, likes, image uploads, and profiles, with PostgreSQL and email-based password recovery.
 
-The focus of this project is working functionality, not UI design.
+📸 What This Project Does
 
-🚀 Features
+✔ Allows users to register & login securely
+✔ Users can post short blogs (15-word limit)
+✔ Blogs support image uploads
+✔ Users can like posts (count updates on refresh)
+✔ Blogs are shown in LIFO order (latest first)
+✔ Users can create & edit profiles
+✔ Forgot / Reset Password via email
+✔ Uses PostgreSQL + Flask-Migrate
+✔ Proper error handling at every level
 
-User Authentication
+🎯 Design is minimal — functionality is the priority
+
+🧱 Project Structure
+TWITTER_APP/
+│
+├── app/
+│   ├── models/          # Database models
+│   ├── routes/          # Application routes (auth, blog, profile)
+│   ├── static/          # CSS, uploaded images
+│   ├── templates/       # Jinja2 templates
+│   ├── __init__.py
+│   ├── config.py        # App configuration
+│   └── extensions.py   # DB, LoginManager, Mail
+│
+├── migrations/          # Database migrations
+│
+├── .env                 # Environment variables (NOT pushed to Git)
+├── .gitignore
+├── requirements.txt
+├── pyproject.toml
+├── run.py               # App entry point
+├── uv.lock
+└── README.md
+
+🚀 Features Overview
+🔐 Authentication
 
 Register
 
@@ -18,77 +52,57 @@ Forgot Password
 
 Reset Password (Email-based)
 
-Microblogging
+✍️ Microblogging
 
-Post blogs with maximum 150 words
+Maximum 15 words per blog
 
-Upload images with posts
+Image upload support
 
-Blogs shown in LIFO (Latest First) order
+Latest posts shown first (LIFO)
 
-Likes
+❤️ Likes
 
 Like counter visible to all users
 
-Like count updates on page refresh
+Count updates on page refresh
 
-User Profile
+👤 User Profile
 
-Profile creation
+Create profile
 
-Edit profile for logged-in users
+Edit profile (logged-in users)
 
-Database
-
-PostgreSQL with migrations
-
-Security
-
-Environment variables via .env
+🛡️ Security & Validation
 
 Password hashing
 
-Error Handling
+CSRF protection
 
-Proper validation and error messages
+Secure email tokens
 
-Templating
-
-Jinja2 templates
-
-Simple HTML & CSS
+Proper error messages
 
 🛠️ Tech Stack
-
-Python 3.8+
-
-Flask
-
-Flask-SQLAlchemy
-
-Flask-Migrate
-
-Flask-Login
-
-Flask-Mail
-
-PostgreSQL
-
-Jinja2
-
-HTML / CSS
-
+Category	Technology
+Backend	Flask
+Database	PostgreSQL
+ORM	SQLAlchemy
+Auth	Flask-Login
+Migration	Flask-Migrate
+Email	Flask-Mail
+Templates	Jinja2
+Frontend	HTML, CSS
 ⚙️ Installation & Setup
 1️⃣ Clone the Repository
 git clone https://github.com/meetfvtagline/twitter_app.git
-cd twitter-app
+cd twitter_app
 
 2️⃣ Create & Activate Virtual Environment
-On Linux / macOS:
+Linux / macOS
 python3 -m venv venv
 source venv/bin/activate
 
-On Windows:
+Windows
 python -m venv venv
 venv\Scripts\activate
 
@@ -97,122 +111,97 @@ pip install -r requirements.txt
 
 🔐 Environment Variables (.env)
 
-This project uses environment variables for security.
+Create a .env file in the project root:
 
-Create a .env file in the root directory
 SECRET_KEY=super-secret-key
 DATABASE_URL=postgresql://postgres:root@localhost:5432/twitter_db
 MAIL_USERNAME=your_email@gmail.com
 MAIL_PASSWORD=your_google_app_password
 
 
-⚠️ Important:
-The .env file is NOT pushed to Git. Each user must create it manually.
+⚠️ .env is ignored by Git for security reasons.
 
 🗄️ PostgreSQL Database Setup
 1️⃣ Install PostgreSQL
 
-Download from: https://www.postgresql.org/download/
+Download from:
+👉 https://www.postgresql.org/download/
 
-Install and note:
+Take note of:
 
 Username (default: postgres)
 
 Password (example used: root)
 
 2️⃣ Create Database
-
-Open PostgreSQL shell (psql) or PgAdmin and run:
-
 CREATE DATABASE twitter_db;
 
-3️⃣ Database Migration
-
-Initialize migrations (only first time):
-
-flask db init
-
-
-Create migration files:
-
+3️⃣ Run Database Migrations
+flask db init       # only first time
 flask db migrate -m "Initial migration"
-
-
-Apply migrations:
-
 flask db upgrade
 
-📧 Email Configuration (Forgot / Reset Password)
+📧 Email Setup (Forgot / Reset Password)
 
-This project uses Gmail SMTP with Google App Passwords.
+This app uses Gmail SMTP with Google App Passwords.
 
-🔹 How MAIL_USERNAME is obtained
+🔹 MAIL_USERNAME
 
-Use your Gmail address
-
-Example:
+Use your Gmail address:
 
 MAIL_USERNAME=meetfv.tagline@gmail.com
 
 🔹 How to Create Google App Password
 
-⚠️ You must enable 2-Step Verification on your Google account.
+⚠️ 2-Step Verification must be enabled
 
 Steps:
 
-Go to Google Account
+Go to 👉 https://myaccount.google.com
 
-https://myaccount.google.com
-
-Click Security
+Open Security
 
 Enable 2-Step Verification
 
-After enabling, go to:
-
-Security → App Passwords
+Go to Security → App Passwords
 
 Select:
 
-App: Mail
+App → Mail
 
-Device: Other
+Device → Other
 
 Generate password
 
 Copy the 16-character password
 
-Paste it into .env
-
 MAIL_PASSWORD=abcdefghijklmnop
 
 
-✅ Use this password instead of your Gmail password.
+✅ Use this instead of your Gmail password.
 
 ▶️ Running the Application
 
-Make sure:
+Ensure:
 
-Virtual environment is activated
+Virtual environment is active
 
 PostgreSQL is running
 
 .env file exists
 
-Run the app:
+Run:
 
 python run.py
 
 
-The app will be available at:
+Open browser:
 
-http://127.0.0.1:5000/
+http://127.0.0.1:5000
 
-👤 How Users Can Access the App
+👤 How Users Use the App
 
-Open browser
-
-Go to http://127.0.0.1:5000
+Open the app URL
 
 Register a new account
 
@@ -222,34 +211,63 @@ Create blogs (15-word limit)
 
 Upload images
 
-Like other users’ blogs
+Like other users’ posts
 
 Edit profile
 
-Reset password if forgotten (via email)
+Reset password via email if needed
 
 ❗ Error Handling
 
+Handled scenarios include:
+
 Invalid login credentials
 
-Duplicate email registration
+Duplicate registration
 
-Blog text exceeding 15 words
+Blog exceeding word limit
 
-Unauthorized access prevention
+Unauthorized access
 
-Invalid password reset tokens
+Invalid reset token
 
-File upload validation
-
-All handled with proper messages.
+Invalid file uploads
 
 🔒 Security Notes
 
-.env file is ignored via .gitignore
+.env excluded from version control
 
 Passwords are hashed
 
+Secure email tokens
+
 CSRF protection enabled
 
-Secure email-based password reset
+📌 Future Enhancements
+
+Follow / Unfollow users
+
+AJAX likes
+
+Comments
+
+Pagination
+
+Deployment (Docker / AWS / Render)
+
+👨‍💻 Author
+
+Meet FV Tagline
+GitHub: https://github.com/meetfvtagline
+
+If you want, I can also:
+
+Add screenshots section
+
+Add API documentation
+
+Optimize README for interview submission
+
+Make a deployment README
+
+Just say the word 🚀

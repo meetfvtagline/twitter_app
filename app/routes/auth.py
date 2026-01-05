@@ -75,9 +75,14 @@ def login():
             flash("Invalid credentials")
             return redirect(url_for("auth.login"))
 
-        session['user_id'] = user.id
-        flash("Login successful")
-        return redirect(url_for("home.dashboard"))
+        if user.role=='admin':
+            session['user_id']=user.id
+            flash("admin sucessfully login")
+            return redirect(url_for("admin.dashboard"))
+        elif user.role=='user':
+            session['user_id'] = user.id
+            flash("Login successful")
+            return redirect(url_for("home.dashboard"))
 
     return render_template("login.html")
 
@@ -169,3 +174,6 @@ def reset_password(token):
         return redirect(url_for("auth.login"))
 
     return render_template("reset_password.html")
+
+
+

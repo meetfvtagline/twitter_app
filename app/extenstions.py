@@ -4,5 +4,5 @@ from flask_mail import Mail
 
 db = SQLAlchemy()
 csrf = CSRFProtect()
-mail=Mail()
+mail=Mail()     
 

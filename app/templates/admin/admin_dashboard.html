@@ -1,0 +1,21 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Welcome {{curr_user.username}} to admin site cantrol.</h1>
+    {%with message=get_flashed_messages()%}
+        {%for msg in message%}
+            <h2>{{msg}}</h2>
+            {%endfor%}
+        {%endwith%}
+    <a href="{{url_for('admin.allblog')}}">View all blog</a>
+    <a href="{{url_for('admin.allusers')}}">View all Users</a>  
+    <a href="{{url_for('auth.logout')}}">logout</a>
+
+    {% block admincenter%}
+    {% endblock %}
+</body>
+</html>  

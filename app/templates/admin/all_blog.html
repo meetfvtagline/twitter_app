@@ -1,0 +1,64 @@
+{% extends "admin/admin_dashboard.html" %}
+{%block admincenter%}
+<style>
+    .blog-post {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 15px 0;
+    background-color: #f9f9f9;
+    transition: box-shadow 0.3s ease;
+}
+
+.blog-post:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.blog-author {
+    font-size: 1.2em;
+    color: #333;
+}
+
+.blog-title {
+    font-size: 1.5em;
+    color: #007BFF;
+}
+
+.blog-description {
+    font-size: 1em;
+    color: #555;
+}
+
+.blog-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+.blog-likes {
+    font-size: 0.9em;
+    color: #888;
+}
+
+</style>
+{% for blog in blogs %}
+<div class="blog-post">
+    <h2 class="blog-author">Blog by {{ blog.user.username }}</h2>
+    <h3 class="blog-title">{{ blog.title }}</h3>
+    <p class="blog-description">{{ blog.description }}</p>
+    {% if blog.image_path %}
+        <img src="{{ url_for('static', filename=blog.image_path) }}" alt="Blog image" class="blog-image">
+    {% endif %}
+    <p class="blog-likes">Likes: {{ blog.likes|length }}</p>
+      <form method="POST" action="{{ url_for('admin.deleteuserblog') }}" onsubmit="return confirm('Are you sure you want to delete this blog?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button name="delete" value="{{ blog.id }}" class="delete-btn">
+                    Delete
+    </button>
+        </form>
+</div>
+{% endfor %}
+
+
+{%endblock%} 

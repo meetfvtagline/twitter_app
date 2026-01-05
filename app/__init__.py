@@ -5,6 +5,7 @@ from .config import Config
 from flask_migrate import Migrate
 from .routes.auth import auth_bp
 from .routes.home import home_bp
+from .routes.admin import admin_bp
 from .extenstions import db,csrf,mail
 from app.models.user import User,Blog
 import os
@@ -31,6 +32,7 @@ def create_app():
     
     app.register_blueprint(home_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
 
 
     return app

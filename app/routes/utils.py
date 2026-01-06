@@ -1,3 +1,9 @@
+'''
+Docstring for app.routes.utils
+
+All The utils for email and other functionality is here.
+'''
+
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
 
@@ -12,3 +18,4 @@ def verify_reset_token(token, expires=1800):  # 30 min
     except:
         return None
     return email
+    

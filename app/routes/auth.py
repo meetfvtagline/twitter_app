@@ -77,6 +77,7 @@ def login():
 
         if user.role=='admin':
             session['user_id']=user.id
+            session['role'] = user.role
             flash("admin sucessfully login")
             return redirect(url_for("admin.dashboard"))
         elif user.role=='user':

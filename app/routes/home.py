@@ -1,3 +1,11 @@
+'''
+Docstring for app.routes.home
+
+All the dashboard for user endpoints handle in here.
+'''
+
+
+
 from flask import Blueprint, render_template,request,url_for,redirect,current_app,abort,flash,jsonify
 from app.routes.auth import get_current_user, login_required
 from werkzeug.utils import secure_filename

@@ -124,6 +124,9 @@
                 <a href="{{ url_for('home.dashboard') }}" class="nav-button">Dashboard</a>
                 <a href="{{ url_for('auth.profile') }}" class="nav-button">Profile</a>
                 <a href="{{ url_for('auth.logout') }}" class="nav-button">Logout</a>
+                {% if session.get('role')=='admin' %}
+                <a href="{{url_for('admin.dashboard')}}">Admin_site</a>
+                {%endif%}
             {% else %}
                 <a href="{{ url_for('auth.login') }}" class="nav-button">Login</a>
                 <a href="{{ url_for('auth.register') }}" class="nav-button primary">Register</a>

@@ -2,46 +2,42 @@
 {% block admincenter %}
 
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 20px;
+    .user-card {
+        background: #111827;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 15px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     }
 
-    h2 {
-        color: #333;
-        border-bottom: 2px solid #007BFF;
-        padding: 10px 0;
+    .user-card span {
+        color: #E5E7EB;
     }
 
-    .user-info {
-        background-color: #fff;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        margin-bottom: 20px;
-        padding: 15px;
-    }
-
-    .user-info h2 {
-        margin: 0;
-        font-size: 1.5em;
+    .role {
+        color: #1DA1F2;
+        font-weight: bold;
     }
 </style>
 
-{% for user in all_user %}
-    <div class="user-info">
-        <h2>ID: {{user.id}}</h2>
-        <h2>Username: {{user.username}}</h2>
-        <h2>Password Hash: {{user.password_hash}}</h2>
-        <h2>Role: {{user.role}}</h2>
-        <form method="POST" action="{{ url_for('admin.deleteuser') }}" onsubmit="return confirm('Are you sure you want to delete this blog?');">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button name="delete" value="{{ user.id }}" class="delete-btn">
-                    Delete
-    </button>
+{% for user in users %}
+<div class="user-card">
+    <span>ID: {{ user.id }}</span>
+    <span>👤 {{ user.username }}</span>
+    <span class="role">{{ user.role }}</span>
+
+    <form method="POST" action="{{ url_for('admin.users') }}"
+          onsubmit="return confirm('Delete this user?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button name="delete" value="{{ user.id }}" class="btn-danger">
+            Delete
+        </button>
     </form>
-    </div>
+</div>
 {% endfor %}
 
 {% endblock %}

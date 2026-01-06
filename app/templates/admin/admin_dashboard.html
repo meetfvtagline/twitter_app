@@ -1,21 +1,121 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Admin Panel</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        body {
+            background-color: #0F172A;
+            color: #E5E7EB;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #020617;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            color: #1DA1F2;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #CBD5E1;
+            text-decoration: none;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: #1DA1F2;
+            color: #fff;
+        }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            padding: 25px;
+        }
+
+        .header {
+            background: #020617;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+        }
+
+        /* Flash Messages */
+        .flash {
+            background: #1DA1F2;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            color: white;
+        }
+
+        /* Buttons */
+        .btn-danger {
+            background: #EF4444;
+            border: none;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #DC2626;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome {{curr_user.username}} to admin site cantrol.</h1>
-    {%with message=get_flashed_messages()%}
-        {%for msg in message%}
-            <h2>{{msg}}</h2>
-            {%endfor%}
-        {%endwith%}
-    <a href="{{url_for('admin.allblog')}}">View all blog</a>
-    <a href="{{url_for('admin.allusers')}}">View all Users</a>  
-    <a href="{{url_for('auth.logout')}}">logout</a>
 
-    {% block admincenter%}
-    {% endblock %}
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <a href="{{url_for('admin.blogs')}}">📄 Blogs</a>
+        <a href="{{url_for('admin.users')}}">👤 Users</a>
+        <a href="{{url_for('home.dashboard')}}">🏠 Dashboard</a>
+        <a href="{{url_for('auth.logout')}}">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <div class="header">
+            <h1>Welcome, {{ curr_user.username }}</h1>
+
+            {% with message = get_flashed_messages() %}
+                {% for msg in message %}
+                    <div class="flash">{{ msg }}</div>
+                {% endfor %}
+            {% endwith %}
+        </div>
+
+        {% block admincenter %}
+        {% endblock %}
+    </div>
+
 </body>
-</html>  
+</html>

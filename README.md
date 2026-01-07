@@ -1,15 +1,23 @@
-# 🐦 Flask Twitter‑Like Microblogging App
+# 🐦 Flask Twitter-Like Microblogging App
 
-A **Twitter‑inspired microblogging application** built using **Flask** and **PostgreSQL**.
-This project focuses on **core backend functionality**, clean architecture, and secure authentication rather than UI design.
+A **Twitter-inspired microblogging application** built using **Flask** and **PostgreSQL**.
+This project focuses on **backend fundamentals**, **secure authentication**, **role-based access**, and a **clean, scalable architecture** rather than UI design.
 
 ---
 
 ## ✨ Overview
 
-This application allows users to create short microblogs, upload images, like posts, and manage profiles with **secure authentication** and **email‑based password recovery**.
+This application allows users to:
 
-🎯 **Goal:** Demonstrate Flask fundamentals, authentication, database design, and a clean, scalable project structure.
+* Create short microblogs
+* Upload images
+* Like posts
+* Manage profiles
+* Securely recover passwords via email
+
+🧑‍💼 An **Admin Panel** is included for managing users and content.
+
+🎯 **Goal:** Demonstrate Flask fundamentals, authentication, authorization, database design, and clean project structure.
 
 ---
 
@@ -20,54 +28,86 @@ This application allows users to create short microblogs, upload images, like po
 * User Registration
 * Login & Logout
 * Forgot Password
-* Reset Password via Email (Token‑based)
+* Reset Password via Email (Token-based)
 
 ### ✍️ Microblogging
 
-* Create blogs with a **maximum of 15 words**
+* Create blogs (**max 150 words**)
 * Upload images with posts
 * Blogs displayed in **LIFO order** (latest first)
 
 ### ❤️ Likes
 
 * Like posts from other users
-* Like counter updates on page refresh
+* Like count updates on page refresh
 
 ### 👤 User Profiles
 
 * Profile creation
-* Edit profile (**logged‑in users only**)
+* Edit profile (**logged-in users only**)
 
 ### 🛡️ Security & Validation
 
 * Password hashing
 * CSRF protection
 * Secure email tokens
-* Proper validation & user‑friendly error messages
+* Proper validation & user-friendly error messages
+
+### 🧑‍💼 Admin Panel (NEW)
+
+* Admin dashboard
+* View & delete users
+* View & delete blogs
+* Role-based access control (**admin vs user**)
+* Admins created **only via Flask shell**
 
 ---
 
-## 🧱 Project Structure
+## 🧱 Updated Project Structure
 
 ```text
 TWITTER_APP/
 │
 ├── app/
-│   ├── models/          # Database models
-│   ├── routes/          # Auth, blog, profile routes
-│   ├── static/          # CSS & uploaded images
-│   ├── templates/       # Jinja2 templates
+│   ├── models/              # Database models
+│   │   └── user.py
+│   │
+│   ├── routes/
+│   │   ├── admin.py         # Admin routes (protected)
+│   │   ├── auth.py          # Authentication routes
+│   │   ├── home.py          # User dashboard & blogs
+│   │   └── utils.py
+│   │
+│   ├── static/              # CSS & uploaded images
+│   │
+│   ├── templates/
+│   │   ├── admin/           # Admin templates
+│   │   │   ├── admin_dashboard.html
+│   │   │   ├── all_blog.html
+│   │   │   └── all_users.html
+│   │   │
+│   │   ├── create_blog.html
+│   │   ├── dashboard.html
+│   │   ├── forget_pass.html
+│   │   ├── home.html
+│   │   ├── login.html
+│   │   ├── password_change.html
+│   │   ├── profile.html
+│   │   ├── register.html
+│   │   ├── reset_password.html
+│   │   └── update_blog.html
+│   │
 │   ├── __init__.py
-│   ├── config.py        # Application configuration
-│   └── extensions.py   # SQLAlchemy, LoginManager, Mail
+│   ├── config.py            # Application configuration
+│   └── extensions.py        # SQLAlchemy, LoginManager, Mail
 │
-├── migrations/          # Flask-Migrate files
+├── migrations/              # Flask-Migrate files
 │
-├── .env                 # Environment variables (not tracked)
+├── .env                     # Environment variables (not tracked)
 ├── .gitignore
 ├── requirements.txt
 ├── pyproject.toml
-├── run.py               # Application entry point
+├── run.py                   # Application entry point
 ├── uv.lock
 └── README.md
 ```
@@ -81,9 +121,9 @@ TWITTER_APP/
 | Backend   | Flask         |
 | Database  | PostgreSQL    |
 | ORM       | SQLAlchemy    |
-| Auth      | Flask‑Login   |
-| Migration | Flask‑Migrate |
-| Email     | Flask‑Mail    |
+| Auth      | Flask-Login   |
+| Migration | Flask-Migrate |
+| Email     | Flask-Mail    |
 | Templates | Jinja2        |
 | Frontend  | HTML, CSS     |
 
@@ -98,8 +138,6 @@ git clone https://github.com/meetfvtagline/twitter_app.git
 cd twitter_app
 ```
 
----
-
 ### 2️⃣ Create & Activate Virtual Environment
 
 **Linux / macOS**
@@ -113,10 +151,8 @@ source venv/bin/activate
 
 ```bash
 python -m venv venv
-venv\Scripts\activate
+venv\\Scripts\\activate
 ```
-
----
 
 ### 3️⃣ Install Dependencies
 
@@ -137,7 +173,7 @@ MAIL_USERNAME=your_email@gmail.com
 MAIL_PASSWORD=your_google_app_password
 ```
 
-⚠️ **Note:** `.env` is ignored by Git for security reasons.
+⚠️ `.env` is ignored by Git for security reasons.
 
 ---
 
@@ -145,23 +181,18 @@ MAIL_PASSWORD=your_google_app_password
 
 ### 1️⃣ Install PostgreSQL
 
-Download from:
 👉 [https://www.postgresql.org/download/](https://www.postgresql.org/download/)
 
-**Default credentials used:**
+**Default credentials:**
 
 * Username: `postgres`
 * Password: `root`
-
----
 
 ### 2️⃣ Create Database
 
 ```sql
 CREATE DATABASE twitter_db;
 ```
-
----
 
 ### 3️⃣ Run Database Migrations
 
@@ -175,34 +206,18 @@ flask db upgrade
 
 ## 📧 Email Configuration (Password Reset)
 
-This project uses **Gmail SMTP** with **Google App Passwords**.
+Uses **Gmail SMTP** with **Google App Passwords**.
 
-### 🔹 MAIL_USERNAME
-
-Use your Gmail address:
-
-```env
-MAIL_USERNAME=meetfv.tagline@gmail.com
-```
-
----
-
-### 🔹 How to Create Google App Password
-
-⚠️ **2‑Step Verification must be enabled**
+⚠️ **2-Step Verification must be enabled**
 
 **Steps:**
 
 1. Go to 👉 [https://myaccount.google.com](https://myaccount.google.com)
-2. Open **Security**
-3. Enable **2‑Step Verification**
-4. Go to **Security → App Passwords**
-5. Select:
-
-   * App → Mail
-   * Device → Other
+2. Security → Enable 2-Step Verification
+3. Security → App Passwords
+4. App → Mail
+5. Device → Other
 6. Generate password
-7. Copy the **16‑character password**
 
 ```env
 MAIL_PASSWORD=abcdefghijklmnop
@@ -214,13 +229,11 @@ MAIL_PASSWORD=abcdefghijklmnop
 
 ## ▶️ Running the Application
 
-Make sure:
+Ensure:
 
 * Virtual environment is active
 * PostgreSQL is running
 * `.env` file exists
-
-Run the app:
 
 ```bash
 python run.py
@@ -231,12 +244,63 @@ Open in browser:
 
 ---
 
+## 🧑‍💼 Admin Panel Guide (IMPORTANT)
+
+### 🔑 Admin Access
+
+* Admin users have `role = "admin"`
+* Normal users have `role = "user"`
+* Admin panel is **not publicly accessible**
+
+### 🌐 Admin Panel URL
+
+```
+http://127.0.0.1:5000/admin/dashboard
+```
+
+### 🛠️ Creating an Admin User (Flask Shell)
+
+Admins **cannot** be created via UI.
+
+```bash
+flask shell
+```
+
+```python
+from app import db
+from app.models.user import User
+from werkzeug.security import generate_password_hash
+
+admin = User(
+    username="admin",
+    email="admin@example.com",
+    password_hash=generate_password_hash("admin123"),
+    role="admin"
+)
+
+db.session.add(admin)
+db.session.commit()
+```
+
+Login:
+
+* Email: `admin@example.com`
+* Password: `admin123`
+
+Then visit:
+
+```
+/admin/dashboard
+```
+
+---
+
 ## 👤 User Flow
 
 1. Open application URL
 2. Register a new account
 3. Login
-4. Create short blogs (**15‑word limit**)
+4. Create short blogs (150-word limit)
 5. Upload images
 6. Like other users’ posts
 7. Edit profile
@@ -245,8 +309,6 @@ Open in browser:
 ---
 
 ## ❗ Error Handling
-
-Handled scenarios include:
 
 * Invalid login credentials
 * Duplicate email registration
@@ -262,17 +324,20 @@ Handled scenarios include:
 * `.env` excluded from version control
 * Passwords are securely hashed
 * CSRF protection enabled
-* Secure email‑based password reset
+* Secure email-based password reset
+* Admin routes protected via role-based access
 
 ---
 
 ## 📌 Future Enhancements
 
 * Follow / Unfollow users
-* AJAX‑based likes
+* AJAX-based likes
 * Comments system
 * Pagination
 * Deployment (Docker / AWS / Render)
+* Super-Admin roles
+* Admin activity logs
 
 ---
 
@@ -280,7 +345,5 @@ Handled scenarios include:
 
 **Meet FV Tagline**
 GitHub 👉 [https://github.com/meetfvtagline](https://github.com/meetfvtagline)
-
----
 
 ⭐ *If you like this project, consider giving it a star on GitHub!*

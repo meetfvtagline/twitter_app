@@ -9,7 +9,7 @@ All the dashboard for user endpoints handle in here.
 from flask import Blueprint, render_template,request,url_for,redirect,current_app,abort,flash,jsonify
 from app.routes.auth import get_current_user, login_required
 from werkzeug.utils import secure_filename
-from app.models.user import Blog,Like
+from app.models.user import Blog,Like,User,Follow
 from app.extenstions import db
 import os
 import uuid
@@ -51,8 +51,7 @@ def create_blog():
         image_path=None
 
         word_count = len(description.split())
-        # if word_count > MAX_WORDS:
-        #     raise ValueError(f"Description cannot exceed {MAX_WORDS} words. Currently {word_count} words.")
+      
         
         if word_count > MAX_WORDS:
             flash("Description cannot exceed 150 words")
@@ -124,8 +123,6 @@ def update_blog(blog_id):
         description = request.form['description']
 
         word_count = len(description.split())
-        # if word_count > MAX_WORDS:
-        #     raise ValueError("Description cannot exceed 150 words")
         if word_count > MAX_WORDS:
             flash("Description cannot exceed 150 words")
             return redirect(request.url)
@@ -176,3 +173,26 @@ def like_blog(blog_id):
         "liked": liked,
         "likes_count": len(blog.likes)
     })
+
+@home_bp.route("/user_profile/<int:user_id>")
+@login_required
+def userprofile(user_id):
+    user_curr=get_current_user()
+    if user_id==user_curr.id:
+        return redirect(url_for("auth.profile"))
+    user=User.query.get_or_404(user_id)
+    blogs = Blog.query.filter_by(user_id=user.id).order_by(Blog.id.desc()).all()
+    return render_template("user_profile.html",user=user,blogs=blogs)
+
+@home_bp.route("/followuser/<int:user_id>")
+def followuser(user_id):
+    user_follower=get_current_user()
+    if request.method=='POST':
+        user_following=User.query.get_or_404(user_id)
+        follow=Follow(
+            follower_id=user_follower,
+            following_id=user_following
+        )
+    db.session.add(follow)
+    db.session.commit()
+    return render_template("home.dashboard")

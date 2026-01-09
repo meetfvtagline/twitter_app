@@ -6,7 +6,7 @@ All the Authectication is handle by this file.
 from flask import Blueprint,render_template,request,redirect,url_for,flash,jsonify,make_response,session
 from flask_mail import Message,Mail
 from app.routes.utils import generate_reset_token,verify_reset_token
-from app.models.user import User
+from app.models.user import User,Blog
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.extenstions import db,mail
 from app.config import Config
@@ -98,9 +98,8 @@ def logout():
 @login_required
 def profile():
     user=get_current_user()
-    user_name=user.username
-    user_email=user.email
-    return render_template("profile.html",username=user_name,user_email=user_email)
+    blogs= Blog.query.order_by(Blog.id.desc()).all()
+    return render_template("profile.html",user=user,blogs=blogs)
 
 @auth_bp.route("/change_pass",methods=['POST','GET'])
 @login_required
@@ -138,7 +137,7 @@ def forgot_password():
                 token=token,
                 _external=True
             )
-
+    
             msg = Message(
                 subject="Password Reset Request from Twitter App",
                 recipients=[user.email],

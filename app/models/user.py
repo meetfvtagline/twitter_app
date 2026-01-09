@@ -1,4 +1,5 @@
 from app.extenstions import db
+from datetime import datetime
 
 class User(db.Model):
     __tablename__ = "users"
@@ -22,6 +23,25 @@ class User(db.Model):
         backref="user",
         cascade="all, delete-orphan",
         passive_deletes=True
+    )
+
+
+    # users THIS user follows
+    following = db.relationship(
+        "Follow",
+        foreign_keys="Follow.follower_id",
+        backref="follower",
+        lazy="dynamic",
+        cascade="all, delete-orphan"
+    )
+
+    # users who follow THIS user
+    followers = db.relationship(
+        "Follow",
+        foreign_keys="Follow.following_id",
+        backref="following",
+        lazy="dynamic",
+        cascade="all, delete-orphan"
     )
 
     
@@ -60,13 +80,34 @@ class Like(db.Model):
     )
 
     blog_id = db.Column(
-        db.Integer,
+        db.Integer, 
         db.ForeignKey("blogs.id", ondelete="CASCADE"),
         nullable=False
     )
 
     __table_args__ = (
         db.UniqueConstraint("user_id", "blog_id", name="unique_user_blog_like"),
+    )
+
+class Follow(db.Model):
+    __tablename__ = "follows"
+
+    follower_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True
+    )
+
+    following_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id", ondelete="CASCADE"),
+        primary_key=True
+    )
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        db.CheckConstraint("follower_id != following_id", name="no_self_follow"),
     )
 
 

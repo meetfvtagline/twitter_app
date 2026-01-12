@@ -184,15 +184,27 @@ def userprofile(user_id):
     blogs = Blog.query.filter_by(user_id=user.id).order_by(Blog.id.desc()).all()
     return render_template("user_profile.html",user=user,blogs=blogs)
 
-@home_bp.route("/followuser/<int:user_id>")
+@home_bp.route("/followuser/<int:user_id>", methods=["POST"])
 def followuser(user_id):
-    user_follower=get_current_user()
-    if request.method=='POST':
-        user_following=User.query.get_or_404(user_id)
-        follow=Follow(
-            follower_id=user_follower,
-            following_id=user_following
+    user_follower = get_current_user()          # User object
+    user_following = User.query.get_or_404(user_id)
+
+    # prevent self-follow
+    if user_follower.id == user_following.id:
+        return redirect(url_for("home.dashboard"))
+
+    # prevent duplicate follow
+    existing = Follow.query.filter_by(
+        follower_id=user_follower.id,
+        following_id=user_following.id
+    ).first()
+
+    if not existing:
+        follow = Follow(
+            follower_id=user_follower.id,
+            following_id=user_following.id
         )
-    db.session.add(follow)
-    db.session.commit()
-    return render_template("home.dashboard")
+        db.session.add(follow)
+        db.session.commit()
+
+    return redirect(url_for("home.dashboard"))

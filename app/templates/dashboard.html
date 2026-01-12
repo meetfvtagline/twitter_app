@@ -218,8 +218,9 @@
 
         <a href="{{url_for('home.userprofile',user_id=blog.user_id)}}">User Profile</a>
 
-        <form action=" url_for('home.followuser')">
-            <button value="blog.user_id">follow</button>
+        <form action=" {{url_for('home.followuser', user_id=blog.user_id)}} " method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">follow</button>
         </form>
         
         <!-- Content -->
